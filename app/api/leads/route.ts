@@ -30,8 +30,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Name is required." }, { status: 400 });
     }
 
-    if (!phone || !/^\d{10}$/.test(phone)) {
-      return NextResponse.json({ error: "Phone number must be exactly 10 digits." }, { status: 400 });
+    if (!phone || !/^(?:\+91)?\d{10}$/.test(phone)) {
+      return NextResponse.json({ error: "Phone number must be exactly 10 digits, optionally starting with +91." }, { status: 400 });
     }
 
     // 2. Retrieve credentials from Cloudflare Worker binding or Node process env dynamically

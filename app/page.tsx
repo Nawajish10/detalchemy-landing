@@ -118,8 +118,8 @@ function AppointmentForm() {
 
   async function submit(event: FormEvent) {
     event.preventDefault();
-    if (!/^\d{10}$/.test(form.phone)) {
-      setError("Phone number must be exactly 10 digits.");
+    if (!/^(?:\+91)?\d{10}$/.test(form.phone)) {
+      setError("Phone number must be exactly 10 digits, optionally starting with +91.");
       return;
     }
     setError("");
@@ -179,7 +179,7 @@ function AppointmentForm() {
       <form className="appointment-form" onSubmit={submit}>
         <div className="form-row">
           <input required disabled={loading} placeholder="Your Full Name *" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-          <input required disabled={loading} inputMode="numeric" placeholder="Phone Number *" value={form.phone} maxLength={10} onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "") })} />
+          <input required disabled={loading} inputMode="tel" placeholder="Phone Number *" value={form.phone} maxLength={13} onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/[^\d+]/g, "") })} />
         </div>
         <select required disabled={loading} value={form.treatment} onChange={(e) => setForm({ ...form, treatment: e.target.value })}>
           <option value="">Select Treatment Needed *</option>
@@ -228,8 +228,8 @@ function Chatbot({ onClose }: { onClose: () => void }) {
 
   async function submitLead(event?: FormEvent) {
     event?.preventDefault();
-    if (!/^\d{10}$/.test(phone)) {
-      setError("Please enter a valid 10-digit phone number.");
+    if (!/^(?:\+91)?\d{10}$/.test(phone)) {
+      setError("Please enter a valid 10-digit phone number, optionally starting with +91.");
       return;
     }
     setError("");
