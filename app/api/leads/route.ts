@@ -35,18 +35,9 @@ export async function POST(request: Request) {
     }
 
     // 2. Retrieve credentials from Cloudflare Worker binding or Node process env dynamically
-    let workersEnv: Record<string, string | undefined> = {};
-    try {
-      const workersMod = "cloudflare:workers";
-      const mod = await import(/* @vite-ignore */ workersMod);
-      workersEnv = mod.env as Record<string, string | undefined>;
-  } catch {
-    workersEnv = process.env as Record<string, string | undefined>;
-  }
-
-    const supabaseUrl = workersEnv.SUPABASE_URL || process.env.SUPABASE_URL;
-    const supabaseKey = workersEnv.SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
-    const googleSheetsUrl = workersEnv.GOOGLE_SHEETS_API_URL || process.env.GOOGLE_SHEETS_API_URL;
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+    const googleSheetsUrl = process.env.GOOGLE_SHEETS_API_URL;
 
     if (!supabaseUrl || !supabaseKey) {
       console.error("Supabase configuration is missing.");
