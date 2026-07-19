@@ -1,8 +1,8 @@
 import vinext from "vinext";
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { access, cp, mkdir, rm } from "node:fs/promises";
+import { resolve } from "node:path";
 
 // Load hosting config safely – fall back to empty values if file missing
 let hostingConfig = { d1: "", r2: "" };
@@ -13,7 +13,45 @@ try {
 } catch (e) {
   console.warn("Failed to load .openai/hosting.json, using defaults.");
 }
-import { sites } from "./build/sites-vite-plugin.ts";
+
+// Inlined sites plugin – packages Sites metadata and migrations after build
+async function fileExists(p: string): Promise<boolean> {
+  try {
+    await access(p);
+    return true;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return false;
+    throw error;
+  }
+}
+
+function sites(): Plugin {
+  let root = process.cwd();
+  return {
+    name: "sites",
+    apply: "build",
+    configResolved(config) {
+      root = config.root;
+    },
+    async closeBundle() {
+      const outputDirectory = resolve(root, "dist", ".openai");
+      const hostingCfg = resolve(root, ".openai", "hosting.json");
+      const drizzleSource = resolve(root, "drizzle");
+
+      await rm(outputDirectory, { recursive: true, force: true });
+      await mkdir(outputDirectory, { recursive: true });
+
+      if (await fileExists(hostingCfg)) {
+        await cp(hostingCfg, resolve(outputDirectory, "hosting.json"));
+      }
+      if (await fileExists(drizzleSource)) {
+        await cp(drizzleSource, resolve(outputDirectory, "drizzle"), {
+          recursive: true,
+        });
+      }
+    },
+  };
+}
 
 const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
   "00000000-0000-4000-8000-000000000000";
