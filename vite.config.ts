@@ -1,6 +1,18 @@
 import vinext from "vinext";
 import { defineConfig } from "vite";
-import hostingConfig from "./.openai/hosting.json";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+// Load hosting config safely – fall back to empty values if file missing
+let hostingConfig = { d1: "", r2: "" };
+try {
+  const configUrl = new URL("./.openai/hosting.json", import.meta.url);
+  const raw = fs.readFileSync(configUrl, "utf-8");
+  hostingConfig = JSON.parse(raw);
+} catch (e) {
+  console.warn("Failed to load .openai/hosting.json, using defaults.");
+}
 import { sites } from "./build/sites-vite-plugin";
 
 const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
