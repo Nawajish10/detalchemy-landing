@@ -10,7 +10,7 @@ try {
   const configUrl = new URL("./.openai/hosting.json", import.meta.url);
   const raw = fs.readFileSync(configUrl, "utf-8");
   hostingConfig = JSON.parse(raw);
-} catch (e) {
+} catch {
   console.warn("Failed to load .openai/hosting.json, using defaults.");
 }
 

@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     let body: LeadPayload;
     try {
       body = await request.json();
-    } catch (jsonError) {
+    } catch {
       return NextResponse.json({ error: "Invalid JSON payload." }, { status: 400 });
     }
     const { name, phone, email, city, preferredDate, preferredTime, message, source } = body;
